@@ -1,7 +1,6 @@
 //https://teachablemachine.withgoogle.com/models/BSk6vToy7/
 
-prediction_1="";
-prediction_2="";
+prediction="";
 
 Webcam.set({
     width:350,
@@ -27,12 +26,48 @@ function modelLoaded(){
     console.log("model loaded");
 }
 
+function predictemotion (){
+    img = document.getElementById("capturedimg");
+    classifier.classify(img,gotResult);
+}
+
+function gotResult(error,result){
+    if (error){
+        console.log(error);
+    } else {
+        console.log(result);
+        document.getElementById("gesturename").innerHTML= result[0].label;
+
+        prediction = result[0].label;
+        speak();
+
+        if (result[0].label == "ok"){
+            document.getElementById("resultemoji").innerHTML = "&#128076;";
+        }
+        if (result[0].label == "thumbs up"){
+            document.getElementById("resultemoji").innerHTML = "&#128077;";
+        }
+        if (result[0].label == "cheese pose"){
+            document.getElementById("resultemoji").innerHTML = "&#9996;";
+        }
+    }
+}
+
 function speak(){
+    if (prediction == "ok"){
+        gesture = "This is looking amazing ";
+    }
+    if (prediction == "thumbs up"){
+        gesture = "All the best ";
+    }
+    if (prediction == "cheese pose"){
+        gesture = "That was a marvelous victory";
+    }
+
     var synth = window.speechSynthesis;
 
-    speakdata1="The first prediction is "+prediction_1;
-    speakdata2="And second prediction is "+prediction_2;
+    speakdata=gesture;
 
-    var utterThis = new SpeechSynthesisUtterance(speakdata1+speakdata2);
+    var utterThis = new SpeechSynthesisUtterance(speakdata);
     synth.speak(utterThis);
 }
